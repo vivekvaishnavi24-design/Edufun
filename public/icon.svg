@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="pwa-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <!-- Background with Safe Margin (Maskable friendly) -->
+  <rect width="512" height="512" rx="112" fill="url(#pwa-grad)" />
+  <!-- Central Icon (Well within the 80% safe circle) -->
+  <g transform="translate(256, 256)" filter="url(#shadow)">
+    <!-- Graduation Cap -->
+    <path d="M 0 -85 L 140 -20 L 0 45 L -140 -20 Z" fill="#ffffff" />
+    <path d="M -90 10 L -90 75 C -90 120, 90 120, 90 75 L 90 10 L 0 50 Z" fill="#f8fafc" opacity="0.9" />
+    <!-- Tassel -->
+    <path d="M 115 -10 L 125 50 L 115 75 L 135 75 L 125 50" stroke="#fef08a" stroke-width="8" stroke-linecap="round" fill="none" />
+    <circle cx="125" cy="80" r="10" fill="#fef08a" />
+    <!-- Sparkle Stars -->
+    <path d="M -110 -80 Q -110 -60 -130 -60 Q -110 -60 -110 -40 Q -110 -60 -90 -60 Q -110 -60 -110 -80 Z" fill="#fef08a" />
+    <path d="M 120 -95 Q 120 -80 105 -80 Q 120 -80 120 -65 Q 120 -80 135 -80 Q 120 -80 120 -95 Z" fill="#fef08a" />
+  </g>
+</svg>

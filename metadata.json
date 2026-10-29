@@ -1,0 +1,6 @@
+{
+  "name": "PDF Quiz & Test Generator",
+  "description": "Upload study PDFs or generate tests on every subject ever taught—across natural sciences, mathematics, computer science, humanities, law, medicine, arts, and classical traditions—with interactive feedback, chapter games, and multilingual support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
