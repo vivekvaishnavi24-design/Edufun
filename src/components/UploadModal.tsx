@@ -36,9 +36,10 @@ import { assignQuizToClassGroup } from "../utils/classroomStorage";
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onQuizGenerated: (quiz: GeneratedQuiz) => void;
+  onQuizGenerated: (quiz: GeneratedQuiz, mode?: 'practice' | 'study') => void;
   initialTab?: "pdf" | "subjects" | "samples" | "text";
   currentUser?: ClassroomUserAuth | null;
+  defaultMode?: 'practice' | 'study';
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({
@@ -47,8 +48,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   onQuizGenerated,
   initialTab = "pdf",
   currentUser,
+  defaultMode = "study",
 }) => {
   const [activeTab, setActiveTab] = useState<"pdf" | "subjects" | "samples" | "text">(initialTab);
+  const [learningMode, setLearningMode] = useState<"study" | "practice">(defaultMode);
 
   const isStaff = currentUser && (currentUser.role === "admin" || currentUser.role === "teacher");
 
@@ -243,7 +246,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         }
       }
 
-      onQuizGenerated(generatedQuiz);
+      onQuizGenerated(generatedQuiz, learningMode);
       onClose();
     } catch (err: any) {
       console.error("Quiz generation failed:", err);
@@ -664,6 +667,59 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             </span>
           </div>
 
+          {/* Mode Selector: Study Mode vs Practice Test */}
+          <div className="bg-gradient-to-r from-emerald-50/70 via-teal-50/50 to-indigo-50/60 p-3.5 rounded-2xl border border-emerald-200/90 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase text-slate-800 tracking-wider flex items-center gap-1.5">
+                <span>📖 Learning Format</span>
+              </label>
+              <span className="text-[10px] text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full font-bold border border-emerald-300">
+                {learningMode === "study" ? "Self-Paced • Immediate Explanations" : "Timed Practice"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setLearningMode("study")}
+                className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  learningMode === "study"
+                    ? "bg-white border-emerald-500 text-emerald-950 ring-2 ring-emerald-400 shadow-sm"
+                    : "bg-white/70 border-slate-200 hover:bg-white text-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-base">📖</span>
+                  <span className="text-xs font-black">Study Mode</span>
+                  <span className="text-[9px] px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded font-bold">
+                    Target
+                  </span>
+                </div>
+                <p className="text-[10px] opacity-80 leading-snug">
+                  1-by-1 questions, instant feedback & explanations, no timer. Learn at your own pace from PDF!
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLearningMode("practice")}
+                className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  learningMode === "practice"
+                    ? "bg-white border-indigo-500 text-indigo-950 ring-2 ring-indigo-400 shadow-sm"
+                    : "bg-white/70 border-slate-200 hover:bg-white text-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-base">🎯</span>
+                  <span className="text-xs font-black">Practice Test</span>
+                </div>
+                <p className="text-[10px] opacity-80 leading-snug">
+                  Standard test format with scored evaluation, sheet view, and completion report.
+                </p>
+              </button>
+            </div>
+          </div>
+
           {/* TEACHER & ADMIN EXCLUSIVE EXAMINATION SUITE */}
           {isStaff && (
             <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 via-orange-50/50 to-amber-50 border border-amber-300 text-amber-950 space-y-3 shadow-2xs">
@@ -1018,9 +1074,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               <>
                 <Sparkles className="w-4 h-4" />
                 <span>
-                  {activeTab === "subjects"
+                  {learningMode === "study"
+                    ? activeTab === "pdf"
+                      ? "Generate PDF in Study Mode 📖"
+                      : "Generate & Launch Study Mode 📖"
+                    : activeTab === "subjects"
                     ? `Generate ${customSubjectInput.trim() || selectedSubject?.name || "Subject"} Test`
-                    : "Generate Test"}
+                    : "Generate Practice Test 🎯"}
                 </span>
               </>
             )}

@@ -65,6 +65,8 @@ interface NavbarProps {
   isMusicPlaying?: boolean;
   onLogout?: () => void;
   onOpenImagineCreativity?: () => void;
+  activeQuizMode?: 'practice' | 'study';
+  onToggleStudyMode?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -98,7 +100,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMusic,
   isMusicPlaying = false,
   onLogout,
-  onOpenImagineCreativity
+  onOpenImagineCreativity,
+  activeQuizMode = "practice",
+  onToggleStudyMode,
 }) => {
   const isMidnight = currentTheme === "midnight";
   const [localStreak, setLocalStreak] = useState<LearningStreak>(
@@ -237,6 +241,39 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 2. CENTER-RIGHT PRIMARY ACTION BAR (RESPONSIVE NO-OVERFLOW) */}
           {/* ======================================================== */}
           <div className="flex items-center gap-1.5 sm:gap-2 justify-end min-w-0 shrink-0">
+            {/* 0. STUDY MODE TOGGLE (Self-Paced with Immediate Explanations) */}
+            {onToggleStudyMode && (
+              <button
+                type="button"
+                id="navbar-study-mode-toggle-btn"
+                onClick={() => {
+                  closeAllMenus();
+                  onToggleStudyMode();
+                }}
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-black rounded-xl transition-all shadow-xs cursor-pointer border shrink-0 ${
+                  activeQuizMode === "study"
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500 shadow-emerald-500/20 ring-2 ring-emerald-400"
+                    : isMidnight
+                    ? "bg-slate-900 hover:bg-slate-800 text-emerald-300 border-emerald-800"
+                    : "bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300"
+                }`}
+                title={
+                  activeQuizMode === "study"
+                    ? "Active: Self-Paced Study Mode (Click to switch to Practice Test)"
+                    : "Switch to Self-Paced Study Mode (1-by-1 with instant feedback & explanations, no timer)"
+                }
+              >
+                <BookOpenCheck className="w-3.5 h-3.5 text-current shrink-0" />
+                <span className="hidden sm:inline">
+                  {activeQuizMode === "study" ? "Study Mode" : "Study Mode"}
+                </span>
+                <span className="sm:hidden">Study</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded font-extrabold bg-black/20 text-current shrink-0">
+                  {activeQuizMode === "study" ? "ON 📖" : "📖"}
+                </span>
+              </button>
+            )}
+
             {/* A. IMAGINE UR CREATIVITY (Key Core Feature) */}
             {onOpenImagineCreativity && (
               <button
@@ -800,6 +837,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block px-1">
               🌟 Core Learning Hub
             </span>
+
+            {onToggleStudyMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  closeAllMenus();
+                  onToggleStudyMode();
+                }}
+                className={`w-full p-3 rounded-2xl border text-xs font-black flex items-center justify-between shadow-xs cursor-pointer ${
+                  activeQuizMode === "study"
+                    ? "bg-emerald-600 text-white border-emerald-500 shadow-emerald-500/20"
+                    : isMidnight
+                    ? "bg-slate-900 border-slate-800 text-emerald-300"
+                    : "bg-emerald-50/90 border-emerald-300 text-emerald-950"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <BookOpenCheck className="w-4 h-4 text-current" />
+                  <span>{activeQuizMode === "study" ? "Self-Paced Study Mode (Active)" : "Switch to Study Mode 📖"}</span>
+                </div>
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-black/20 text-current">
+                  {activeQuizMode === "study" ? "Active ⭐" : "1-by-1 Explanations"}
+                </span>
+              </button>
+            )}
 
             {onOpenImagineCreativity && (
               <button

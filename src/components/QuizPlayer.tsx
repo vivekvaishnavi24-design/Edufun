@@ -40,6 +40,7 @@ interface QuizPlayerProps {
   isRegenerating?: boolean;
   currentUser?: ClassroomUserAuth | null;
   onOpenImagineCreativity?: (questionPrompt?: string) => void;
+  onSwitchToStudyMode?: () => void;
 }
 
 export const QuizPlayer: React.FC<QuizPlayerProps> = ({
@@ -55,7 +56,8 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({
   onOpenNotes,
   isRegenerating = false,
   currentUser,
-  onOpenImagineCreativity
+  onOpenImagineCreativity,
+  onSwitchToStudyMode,
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<"single" | "sheet">("single");
@@ -367,7 +369,20 @@ export const QuizPlayer: React.FC<QuizPlayerProps> = ({
           </div>
 
           {/* Live stats and mode switch */}
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* Study Mode Direct Switcher */}
+            {onSwitchToStudyMode && (
+              <button
+                type="button"
+                onClick={onSwitchToStudyMode}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                title="Switch to Self-Paced Study Mode (1-by-1 with instant feedback & explanations, no timer)"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Study Mode 📖</span>
+              </button>
+            )}
+
             {/* View Mode Toggle */}
             <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200">
               <button

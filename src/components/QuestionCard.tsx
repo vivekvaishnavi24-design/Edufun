@@ -689,7 +689,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   id={`tf-true-${question.id}`}
                   disabled={!isExamMode && isAnswered}
                   onClick={() => handleOptionSelect("True")}
-                  className={`p-5 sm:p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center relative group select-none ${cardStyle} ${
+                  className={`p-4 sm:p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center relative group select-none ${cardStyle} ${
                     canClick
                       ? "cursor-pointer active:scale-95 hover:-translate-y-1"
                       : "cursor-default"
@@ -784,7 +784,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   id={`tf-false-${question.id}`}
                   disabled={!isExamMode && isAnswered}
                   onClick={() => handleOptionSelect("False")}
-                  className={`p-5 sm:p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center relative group select-none ${cardStyle} ${
+                  className={`p-4 sm:p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center relative group select-none ${cardStyle} ${
                     canClick
                       ? "cursor-pointer active:scale-95 hover:-translate-y-1"
                       : "cursor-default"

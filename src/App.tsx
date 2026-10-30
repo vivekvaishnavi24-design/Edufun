@@ -21,7 +21,8 @@ import {
   Copy,
   Check,
   ShieldAlert,
-  AlertTriangle
+  AlertTriangle,
+  Layers
 } from "lucide-react";
 import {
   GeneratedQuiz,
@@ -61,6 +62,7 @@ import { generateOfflineQuiz } from "./utils/offlineQuizEngine";
 import { playSuccessSound, playIncorrectSound } from "./utils/audio";
 import { Navbar } from "./components/Navbar";
 import { QuizPlayer } from "./components/QuizPlayer";
+import { StudyModePlayer } from "./components/StudyModePlayer";
 import { ResultsView } from "./components/ResultsView";
 import { UploadModal } from "./components/UploadModal";
 import { UniversalSubjectExplorerModal } from "./components/UniversalSubjectExplorerModal";
@@ -294,6 +296,7 @@ export default function App() {
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [quizMode, setQuizMode] = useState<"practice" | "study">("study");
 
   // Learning Streak state
   const [learningStreak, setLearningStreak] = useState<LearningStreak>(() =>
@@ -713,7 +716,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleNewQuizGenerated = (newQuiz: GeneratedQuiz) => {
+  const handleNewQuizGenerated = (newQuiz: GeneratedQuiz, targetMode?: "practice" | "study") => {
     const balancedQuiz = {
       ...newQuiz,
       questions: ensureVariedMcqOptions(newQuiz.questions),
@@ -722,6 +725,9 @@ export default function App() {
     setCurrentQuiz(balancedQuiz);
     setUserAnswers({});
     setIsCompleted(false);
+    if (targetMode) {
+      setQuizMode(targetMode);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -778,6 +784,8 @@ export default function App() {
         isMusicPlaying={isMusicPlaying}
         onLogout={handleLogout}
         onOpenImagineCreativity={isImagineCreativityEnabled ? () => handleOpenImagineCreativity() : undefined}
+        activeQuizMode={quizMode}
+        onToggleStudyMode={() => setQuizMode((prev) => (prev === "study" ? "practice" : "study"))}
       />
 
       {/* Main App Content Container */}
@@ -1171,7 +1179,7 @@ export default function App() {
             </div>
 
             {/* Quick Concept Launch Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1">
+            <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1">
               {[
                 {
                   id: 'weather_water_cycle',
@@ -1280,7 +1288,7 @@ export default function App() {
           </div>
 
           {/* All Classes Grid: Class 1 to Class 12 in order */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
             {[
               { classId: "class_1" as EducationLevel, label: "Class 1", icon: "🎨", subtitle: "Counting & Shapes" },
               { classId: "class_2" as EducationLevel, label: "Class 2", icon: "🦁", subtitle: "Living & Addition" },
@@ -1397,7 +1405,7 @@ export default function App() {
 
         {/* Current Quiz Banner & Controls */}
         <div
-          className={`flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border backdrop-blur-xs transition-colors duration-300 ${
+          className={`flex flex-col md:flex-row md:items-center justify-between gap-3.5 p-3.5 sm:p-4 rounded-2xl border backdrop-blur-xs transition-colors duration-300 ${
             theme === "midnight"
               ? "bg-slate-900/85 border-slate-800/90 text-slate-100 shadow-md shadow-slate-950/40"
               : "bg-white/85 sm:bg-gradient-to-r sm:from-indigo-50/80 sm:via-white/90 sm:to-slate-50/80 border-indigo-100/90 text-slate-900 shadow-xs"
@@ -1413,12 +1421,19 @@ export default function App() {
                   theme === "midnight" ? "text-indigo-400" : "text-indigo-700"
                 }`}
               >
-                <span>Current Quiz</span>
+                <span>Current Material</span>
                 {currentQuiz.subjectName && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold border border-indigo-200">
                     {currentQuiz.subjectName}
                   </span>
                 )}
+                <span className={`text-[10px] px-1.5 py-0.2 rounded font-black border ${
+                  quizMode === 'study'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                    : 'bg-indigo-100 text-indigo-900 border-indigo-300'
+                }`}>
+                  {quizMode === 'study' ? 'STUDY MODE (SELF-PACED)' : 'PRACTICE MODE'}
+                </span>
                 {isOffline && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-bold border border-amber-300">
                     OFFLINE
@@ -1436,6 +1451,36 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Direct Mode Switcher: Study Mode vs Practice Test */}
+            <div className="inline-flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shrink-0">
+              <button
+                type="button"
+                onClick={() => setQuizMode("study")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                  quizMode === "study"
+                    ? "bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-400"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-900"
+                }`}
+                title="Self-Paced Study Mode (1-by-1 with immediate feedback & explanations, no timer)"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Study Mode 📖</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuizMode("practice")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                  quizMode === "practice"
+                    ? "bg-indigo-600 text-white shadow-xs ring-1 ring-indigo-400"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-900"
+                }`}
+                title="Practice Test (Scored interactive test)"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Practice Test 🎯</span>
+              </button>
+            </div>
+
             {/* Audio Toggle */}
             <button
               onClick={() => setSoundEnabled((prev) => !prev)}
@@ -1501,19 +1546,35 @@ export default function App() {
           </div>
         </div>
 
-        {/* Quiz Body: QuizPlayer or ResultsView */}
+        {/* Quiz Body: StudyModePlayer, QuizPlayer or ResultsView */}
         {!isCompleted ? (
-          <QuizPlayer
-            quiz={currentQuiz}
-            userAnswers={userAnswers}
-            onSelectAnswer={handleSelectAnswer}
-            onClearAnswer={handleClearAnswer}
-            onFinishQuiz={handleFinishQuiz}
-            onAskQuestion={handleOpenAskTutor}
-            onOpenJokeBreak={handleOpenJokeBreak}
-            currentUser={currentUser}
-            onOpenImagineCreativity={isImagineCreativityEnabled ? handleOpenImagineCreativity : undefined}
-          />
+          quizMode === "study" ? (
+            <StudyModePlayer
+              quiz={currentQuiz}
+              soundEnabled={soundEnabled}
+              onSwitchToPracticeMode={() => setQuizMode("practice")}
+              onOpenAskTutor={handleOpenAskTutor}
+              onOpenImagineCreativity={isImagineCreativityEnabled ? handleOpenImagineCreativity : undefined}
+              onOpenJokeBreak={handleOpenJokeBreak}
+              onUploadNewPdf={() => setIsUploadOpen(true)}
+              onRegenerateFreshQuestions={handleRegenerateFreshQuiz}
+              onOpenNotes={handleOpenNotes}
+              currentUser={currentUser}
+            />
+          ) : (
+            <QuizPlayer
+              quiz={currentQuiz}
+              userAnswers={userAnswers}
+              onSelectAnswer={handleSelectAnswer}
+              onClearAnswer={handleClearAnswer}
+              onFinishQuiz={handleFinishQuiz}
+              onAskQuestion={handleOpenAskTutor}
+              onOpenJokeBreak={handleOpenJokeBreak}
+              currentUser={currentUser}
+              onOpenImagineCreativity={isImagineCreativityEnabled ? handleOpenImagineCreativity : undefined}
+              onSwitchToStudyMode={() => setQuizMode("study")}
+            />
+          )
         ) : (
           <ResultsView
             quiz={currentQuiz}
@@ -1631,7 +1692,9 @@ export default function App() {
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        onQuizGenerated={handleNewQuizGenerated}
+        onQuizGenerated={(quiz, mode) => handleNewQuizGenerated(quiz, mode)}
+        defaultMode={quizMode}
+        currentUser={currentUser}
       />
 
       {/* 7. Print Modal */}
